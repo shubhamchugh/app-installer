@@ -112,6 +112,7 @@ def get_args():
                             description='Install apps for an Android phone')
     parser.add_argument('-o', dest='optional', action='store', choices={
                         'all', 'none', 'ask'}, default='ask', help='Whether to install optional apps')
+    parser.add_argument('-d',dest='down',action='store_true',help='Download only')
     return parser.parse_args()
 
 def main():
@@ -124,9 +125,10 @@ def main():
     apps = Apps(mode)
     if DEBUG:
         print(apps)
-    install_thread = threading.Thread(
-        target=install, name='InstallThread', args=(apps,))
-    install_thread.start()
+    if not args.down:
+        install_thread = threading.Thread(
+            target=install, name='InstallThread', args=(apps,))
+        install_thread.start()
     with ThreadPoolExecutor(max_workers=5, thread_name_prefix='DownThread') as executor:
         future_to_pkg = {executor.submit(
             down, pkg): pkg for pkg in apps.get_all()}
@@ -135,7 +137,8 @@ def main():
                 apps.set_state(future_to_pkg[future], AppState.DOWNLOADED)
             else:
                 apps.set_state(future_to_pkg[future], AppState.FAILED)
-    install_thread.join()
+    if not args.down:
+        install_thread.join()
     if DEBUG:
         print(apps)
 
