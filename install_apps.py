@@ -107,7 +107,7 @@ def install(apps, rm):
             print('安装成功', pkg)
             apps.set_state(pkg, AppState.INSTALLED)
             if rm:
-                remove(pkg+'apk')
+                remove(pkg+'.apk')
 
 
 def get_args():
