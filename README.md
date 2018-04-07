@@ -25,14 +25,24 @@ XXXXXXX        device
 
 请保证当前目录中有applist.csv这个文件
 
-`install-apps.py -o {ask,none,all}`  
+`install-apps.py -o {ask,none,all} -d -r`  
 
-- ask：默认选项，对于一些可选的apk，询问用户是否安装  
+`-o`：  
+
+- ask：默认选项，对于一些可选的apk，询问用户是否安装
 - none：所有可选的apk全都不安装
 - all：所有可选的apk全都安装
 
+`-d`：仅下载，不安装  
+`-r`：删除安装成功的apk文件
+
 ## TODO
 
-- [ ] setup.py还没写
-- [ ] 下载的apk不会自动删除，加一个选项
-- [ ] 加一个只下载不安装的选项
+- [x] setup.py还没写
+- [x] 下载的apk不会自动删除，加一个选项
+- [x] 加一个只下载不安装的选项
+- [ ] 如果手机中已经安装了applist.csv中记录的apk，则无需再下载
+
+## NOT TODO
+
+- 不会去判断当前环境是否安装有adb

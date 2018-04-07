@@ -3,10 +3,11 @@
 import csv
 import subprocess
 import threading
+from argparse import ArgumentParser
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
+from os import remove
 from time import ctime
-from argparse import ArgumentParser
 
 from download import down
 
@@ -17,7 +18,7 @@ AppState = Enum('AppState', ('DOWNLOADING', 'DOWNLOADED',
 
 
 class Apps():
-    def read_csv(self,mode):
+    def read_csv(self, mode):
         apps = {}
         with open('applist.csv', encoding='utf-8') as file:
             for i in csv.reader(file):
@@ -82,14 +83,14 @@ class Apps():
                     print('notify!')
                 self._condition.notify()
 
-    def __init__(self,mode):
+    def __init__(self, mode):
         self.read_csv(mode)
 
     def __str__(self):
         return str('\n'.join(['{pkg}: {state}'.format(pkg=i[0], state=i[1].name) for i in self._apps.items()]))
 
 
-def install(apps):
+def install(apps, rm):
     while True:
         pkg = apps.get_for_install()
         if not pkg:
@@ -105,6 +106,8 @@ def install(apps):
         else:
             print('安装成功', pkg)
             apps.set_state(pkg, AppState.INSTALLED)
+            if rm:
+                remove(pkg+'apk')
 
 
 def get_args():
@@ -112,22 +115,26 @@ def get_args():
                             description='Install apps for an Android phone')
     parser.add_argument('-o', dest='optional', action='store', choices={
                         'all', 'none', 'ask'}, default='ask', help='Whether to install optional apps')
-    parser.add_argument('-d',dest='down',action='store_true',help='Download only')
+    parser.add_argument('-d', dest='down',
+                        action='store_true', help='Download only')
+    parser.add_argument('-r', dest='remove', action='store_true',
+                        help='Remove already installed apk files')
     return parser.parse_args()
 
+
 def main():
-    args=get_args()
-    mode=None
+    args = get_args()
+    mode = None
     if args.optional == 'all':
-        mode=True
+        mode = True
     elif args.optional == 'none':
-        mode=False
+        mode = False
     apps = Apps(mode)
     if DEBUG:
         print(apps)
     if not args.down:
         install_thread = threading.Thread(
-            target=install, name='InstallThread', args=(apps,))
+            target=install, name='InstallThread', args=(apps, args.remove))
         install_thread.start()
     with ThreadPoolExecutor(max_workers=5, thread_name_prefix='DownThread') as executor:
         future_to_pkg = {executor.submit(
