@@ -41,8 +41,9 @@ XXXXXXX        device
 - [x] setup.py还没写
 - [x] 下载的apk不会自动删除，加一个选项
 - [x] 加一个只下载不安装的选项
-- [ ] 如果手机中已经安装了applist.csv中记录的apk，则无需再下载
+- [x] 如果手机中已经安装了applist.csv中记录的apk，则无需再下载
 
 ## NOT TODO
 
 - 不会去判断当前环境是否安装有adb
+- 不会去判断当前目录是否有applist.csv文件

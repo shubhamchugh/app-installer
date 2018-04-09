@@ -20,30 +20,34 @@ AppState = Enum('AppState', ('DOWNLOADING', 'DOWNLOADED',
 class Apps():
     def read_csv(self, mode):
         apps = {}
+        local_apps=subprocess.check_output('adb shell pm list packages -3',shell=True).decode('utf-8').replace('package:','')
         with open('applist.csv', encoding='utf-8') as file:
             for i in csv.reader(file):
+                if local_apps.find(i[0]) != -1:
+                    continue
                 if len(i) > 1:
                     if mode == None and input('{}\n是否安装此App（y/n）：'.format(i[1])).lower() != 'y':
                         continue
                     elif mode == False:
                         continue
                 apps[i[0]] = AppState.DOWNLOADING
+        if not len(apps):
+            raise SystemExit('需要安装的App都已存在于手机中')
         self._apps = apps
         self._condition = threading.Condition()
 
-    def get_for_install(self):
+    def get(self):
         """
         获得一个状态为的DOWNLOADED的APP的包名
         """
         with self._condition:
             if not self.count(AppState.DOWNLOADING, AppState.DOWNLOADED):
                 if DEBUG:
-                    print('get_for_install', 'No DOWNLOADING or DOWNLOADED apps')
+                    print('get', 'No DOWNLOADING or DOWNLOADED apps')
                 return
             while not self.count(AppState.DOWNLOADED):
                 if DEBUG:
-                    print('get_for_install',
-                          threading.current_thread().name, 'is waiting')
+                    print('get', threading.current_thread().name, 'is waiting')
                 self._condition.wait()
 
             for i in self._apps.items():
@@ -92,7 +96,7 @@ class Apps():
 
 def install(apps, rm):
     while True:
-        pkg = apps.get_for_install()
+        pkg = apps.get()
         if not pkg:
             break
         try:
@@ -123,6 +127,8 @@ def get_args():
 
 
 def main():
+    print(ctime())
+
     args = get_args()
     mode = None
     if args.optional == 'all':
@@ -146,11 +152,8 @@ def main():
                 apps.set_state(future_to_pkg[future], AppState.FAILED)
     if not args.down:
         install_thread.join()
-    if DEBUG:
-        print(apps)
 
+    print(ctime())
 
 if __name__ == '__main__':
-    print(ctime())
     main()
-    print(ctime())

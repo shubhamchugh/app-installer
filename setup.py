@@ -6,7 +6,7 @@ setup(
     author="kinuxer",
     author_email="kinuxer@outlook.com",
     name="app-installer",
-    version="0.1",
+    version="0.2",
     license="MIT",
     url="https://github.com/aerfensi/app-installer",
     py_modules=['install_apps','download',],
