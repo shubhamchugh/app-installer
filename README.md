@@ -1,6 +1,8 @@
 # app-installer
 
-从applist.csv中读取需要下载的APP，然后从[酷安网](https://www.coolapk.com/)/[apkpure](https://apkpure.com/cn/)下载并安装到手机
+从applist.csv中读取需要下载的APP，然后从[酷安网](https://www.coolapk.com/)/[apkpure](https://apkpure.com/cn/)下载并安装到手机  
+**只有install_apps.py和download.py这两个文件和该脚本有关，其他py文件都是我自己的练习，可以直接删掉**
+
 
 ## applist.csv
 

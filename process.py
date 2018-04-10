@@ -1,34 +1,37 @@
 # coding=utf-8
 
-from multiprocessing import Process,Queue
-from multiprocessing.pool import Pool
+from multiprocessing import Process,Queue,Pool
 from time import sleep
-from sys import stdout
 
-PRODUCTS=Queue()
+INSTALLED_APPS=Queue()
 
-def productor(product,out):
+def productor(product):
+    print('productor',product)
     sleep(3)
-    print('put',product,out=out)
-    PRODUCTS.put(product)
+    print('put',product)
+    INSTALLED_APPS.put(product)
 
-def consumer(out):
+def consumer():
+    print('consumer')
     while True:
-        product=PRODUCTS.get()
+        product=INSTALLED_APPS.get()
         if product == None:
             print('consumer_thread exit')
             return
-        print('get',product,out=out)
+        print('get',product)
         sleep(1)
 
 def main():
-    proc=Process(target=consumer,args=(stdout,),name='consumer')
+    proc=Process(target=consumer,name='consumer')
     proc.start()
-    with Pool(5) as p:
-        for i in range(5):
-            print('---',i)
-            p.apply_async(productor,(i,stdout))
-
+    pool=Pool(5)
+    for i in range(5):
+        print('---',i)
+        pool.apply_async(productor,(i,))
+    pool.close()
+    pool.join()
+    INSTALLED_APPS.put(None)
+    proc.join()
 
 if __name__ == '__main__':
     main()
