@@ -1,8 +1,11 @@
 # app-installer
 
-从applist.csv中读取需要下载的APP，然后从[酷安网](https://www.coolapk.com/)/[apkpure](https://apkpure.com/cn/)下载并安装到手机  
-**只有install_apps.py和download.py这两个文件和该脚本有关，其他py文件都是我自己的练习，可以直接删掉**
+从applist.csv中读取需要下载的APP，然后从 [酷安网](https://www.coolapk.com/) 或 [apkpure](https://apkpure.com/cn/) 下载并安装到手机  
 
+写这个脚本是因为国内的同步助手的功能不能同步我的部分App，比如影梭在国内的应用市场就无法找到  
+而酷安网+apkpure的组合几乎能下载到所有我需要的App
+
+还有一个问题无法解决，国内手机用adb安装App时，需要在手机屏幕点击【确认】按钮，所以这个脚本还是无法做到全自动
 
 ## applist.csv
 
@@ -27,7 +30,7 @@ XXXXXXX        device
 
 请保证当前目录中有applist.csv这个文件
 
-`install-apps.py -o {ask,none,all} -d -r`  
+`install-apps -o {ask,none,all} -d -r`  
 
 `-o`：  
 
@@ -44,6 +47,7 @@ XXXXXXX        device
 - [x] 下载的apk不会自动删除，加一个选项
 - [x] 加一个只下载不安装的选项
 - [x] 如果手机中已经安装了applist.csv中记录的apk，则无需再下载
+- [] 对于下载中断的apk文件，发起第二次下载请求
 
 ## NOT TODO
 
